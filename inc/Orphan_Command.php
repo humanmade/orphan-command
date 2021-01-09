@@ -14,469 +14,100 @@ use WP_CLI;
 use WP_CLI_Command;
 
 /**
- * List and delete orphan WordPress entities and metadata.
- *
- * ## EXAMPLES
- *
- *     # List all orphan comments of any comment type.
- *     $ wp orphan comment
- *     2,5
- *
- *     # List all orphan comment metadata as table.
- *     $ wp orphan commentmeta --format=table
- *     +----+
- *     | ID |
- *     +----+
- *     | 4  |
- *     | 8  |
- *     +----+
- *
- *     # Count all orphan posts.
- *     $ wp orphan post --type=post --format=count
- *     1
- *
- *     # Delete all orphan post metadata.
- *     $ wp orphan postmeta --delete
- *     15,16
- *     Deleting 2 items...
- *     Success: Done.
+ * List and delete orphan entities and metadata.
  */
-class Orphan_Command extends WP_CLI_Command {
+abstract class Orphan_Command extends WP_CLI_Command {
 
 	/**
-	 * List (or delete) orphan blog metadata.
-	 *
-	 * ## OPTIONS
-	 *
-	 * [--delete]
-	 * : Delete all orphans.
-	 *
-	 * [--format=<format>]
-	 * : Render output in a particular format.
-	 * ---
-	 * default: ids
-	 * options:
-	 *   - count
-	 *   - csv
-	 *   - ids
-	 *   - json
-	 *   - table
-	 *   - yaml
-	 * ---
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     # List all orphan blog metadata.
-	 *     $ wp orphan blogmeta
-	 *     23,42
-	 *
-	 *     # List all orphan blog metadata as table.
-	 *     $ wp orphan blogmeta --format=table
-	 *     +----+
-	 *     | ID |
-	 *     +----+
-	 *     | 23 |
-	 *     | 42 |
-	 *     +----+
-	 *
-	 *     # Count all orphan blog metadata.
-	 *     $ wp orphan blogmeta --format=count
-	 *     2
-	 *
-	 *     # Delete all orphan blog metadata.
-	 *     $ wp orphan blogmeta --delete
-	 *     23,42
-	 *     Deleting 2 items...
-	 *     Success: Done.
-	 *
-	 * @param array $args       Parameters passed to command (in the original order).
-	 * @param array $assoc_args Parameters passed to command (named).
+	 * @var string
 	 */
-	public function blogmeta( array $args, array $assoc_args ): void {
+	protected $column_id;
 
-		$this->process_( $assoc_args, __FUNCTION__ );
+	/**
+	 * @var string
+	 */
+	protected $column_parent_id;
+
+	/**
+	 * @var string
+	 */
+	protected $column_ref;
+
+	/**
+	 * @var string
+	 */
+	protected $table;
+
+	/**
+	 * @var string
+	 */
+	protected $table_parent;
+
+	/**
+	 * Print the MySQL query to list all orphans for the current entity type and according to the passed parameters.
+	 *
+	 * @param array $args       Parameters passed to the command (original order).
+	 * @param array $assoc_args Parameters passed to the command (named).
+	 */
+	public function query( array $args, array $assoc_args ): void {
+
+		$query = $this->get_query( $assoc_args );
+
+		WP_CLI::log( $query );
 	}
 
 	/**
-	 * List (or delete) orphan comments.
+	 * List all orphans for the current entity type and according to the passed parameters.
 	 *
-	 * ## OPTIONS
-	 *
-	 * [--delete]
-	 * : Delete all orphans.
-	 *
-	 * [--format=<format>]
-	 * : Render output in a particular format.
-	 * ---
-	 * default: ids
-	 * options:
-	 *   - count
-	 *   - csv
-	 *   - ids
-	 *   - json
-	 *   - table
-	 *   - yaml
-	 * ---
-	 *
-	 * [--type=<type>]
-	 * : Comma-separated list of comment type slugs.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     # List all orphan comments of any comment type.
-	 *     $ wp orphan comment
-	 *     2,5
-	 *
-	 *     # List all orphan pages as table.
-	 *     $ wp orphan comment --type=reaction --format=table
-	 *     +----+
-	 *     | ID |
-	 *     +----+
-	 *     | 2  |
-	 *     +----+
-	 *
-	 *     # Count all orphan comments.
-	 *     $ wp orphan comment --type=comment --format=count
-	 *     1
-	 *
-	 *     # Delete all orphan comments of any comment type.
-	 *     $ wp orphan comment --delete
-	 *     2,5
-	 *     Deleting 2 items...
-	 *     Success: Done.
-	 *
-	 * @param array $args       Parameters passed to command (in the original order).
-	 * @param array $assoc_args Parameters passed to command (named).
+	 * @param array $args       Parameters passed to the command (original order).
+	 * @param array $assoc_args Parameters passed to the command (named).
 	 */
-	public function comment( array $args, array $assoc_args ): void {
-
-		$this->process_( $assoc_args, __FUNCTION__ );
-	}
+	abstract public function list( array $args, array $assoc_args ): void;
 
 	/**
-	 * List (or delete) orphan comment metadata.
+	 * Delete all orphans for the current entity type and according to the passed parameters.
 	 *
-	 * ## OPTIONS
-	 *
-	 * [--delete]
-	 * : Delete all orphans.
-	 *
-	 * [--format=<format>]
-	 * : Render output in a particular format.
-	 * ---
-	 * default: ids
-	 * options:
-	 *   - count
-	 *   - csv
-	 *   - ids
-	 *   - json
-	 *   - table
-	 *   - yaml
-	 * ---
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     # List all orphan comment metadata.
-	 *     $ wp orphan commentmeta
-	 *     4,8
-	 *
-	 *     # List all orphan comment metadata as table.
-	 *     $ wp orphan commentmeta --format=table
-	 *     +----+
-	 *     | ID |
-	 *     +----+
-	 *     | 4  |
-	 *     | 8  |
-	 *     +----+
-	 *
-	 *     # Count all orphan comment metadata.
-	 *     $ wp orphan commentmeta --format=count
-	 *     2
-	 *
-	 *     # Delete all orphan comment metadata.
-	 *     $ wp orphan commentmeta --delete
-	 *     4,8
-	 *     Deleting 2 items...
-	 *     Success: Done.
-	 *
-	 * @param array $args       Parameters passed to command (in the original order).
-	 * @param array $assoc_args Parameters passed to command (named).
+	 * @param array $args       Parameters passed to the command (original order).
+	 * @param array $assoc_args Parameters passed to the command (named).
 	 */
-	public function commentmeta( array $args, array $assoc_args ): void {
-
-		$this->process_( $assoc_args, __FUNCTION__ );
-	}
+	abstract public function delete( array $args, array $assoc_args ): void;
 
 	/**
-	 * List (or delete) orphan posts.
+	 * Delete the orphan with the given ID for the current entity type.
 	 *
-	 * ## OPTIONS
+	 * @param int $id Orphan ID.
 	 *
-	 * [--delete]
-	 * : Delete all orphans.
-	 *
-	 * [--format=<format>]
-	 * : Render output in a particular format.
-	 * ---
-	 * default: ids
-	 * options:
-	 *   - count
-	 *   - csv
-	 *   - ids
-	 *   - json
-	 *   - table
-	 *   - yaml
-	 * ---
-	 *
-	 * [--type=<type>]
-	 * : Comma-separated list of post type slugs.
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     # List all orphan posts of any post type.
-	 *     $ wp orphan post
-	 *     19,84
-	 *
-	 *     # List all orphan pages as table.
-	 *     $ wp orphan post --type=page --format=table
-	 *     +----+
-	 *     | ID |
-	 *     +----+
-	 *     | 84 |
-	 *     +----+
-	 *
-	 *     # Count all orphan revisions.
-	 *     $ wp orphan post --type=revision --format=count
-	 *     1
-	 *
-	 *     # Delete all orphan posts of any post type.
-	 *     $ wp orphan post --delete
-	 *     19,84
-	 *     Deleting 2 items...
-	 *     Success: Done.
-	 *
-	 * @param array $args       Parameters passed to command (in the original order).
-	 * @param array $assoc_args Parameters passed to command (named).
+	 * @return bool Whether or not the orphan has been deleted successfully.
 	 */
-	public function post( array $args, array $assoc_args ): void {
-
-		$this->process_( $assoc_args, __FUNCTION__ );
-	}
-
-	/**
-	 * List (or delete) orphan post metadata.
-	 *
-	 * ## OPTIONS
-	 *
-	 * [--delete]
-	 * : Delete all orphans.
-	 *
-	 * [--format=<format>]
-	 * : Render output in a particular format.
-	 * ---
-	 * default: ids
-	 * options:
-	 *   - count
-	 *   - csv
-	 *   - ids
-	 *   - json
-	 *   - table
-	 *   - yaml
-	 * ---
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     # List all orphan post metadata.
-	 *     $ wp orphan postmeta
-	 *     15,16
-	 *
-	 *     # List all orphan post metadata as table.
-	 *     $ wp orphan postmeta --format=table
-	 *     +----+
-	 *     | ID |
-	 *     +----+
-	 *     | 15 |
-	 *     | 16 |
-	 *     +----+
-	 *
-	 *     # Count all orphan post metadata.
-	 *     $ wp orphan postmeta --format=count
-	 *     2
-	 *
-	 *     # Delete all orphan post metadata.
-	 *     $ wp orphan postmeta --delete
-	 *     15,16
-	 *     Deleting 2 items...
-	 *     Success: Done.
-	 *
-	 * @param array $args       Parameters passed to command (in the original order).
-	 * @param array $assoc_args Parameters passed to command (named).
-	 */
-	public function postmeta( array $args, array $assoc_args ): void {
-
-		$this->process_( $assoc_args, __FUNCTION__ );
-	}
-
-	/**
-	 * List (or delete) orphan term metadata.
-	 *
-	 * ## OPTIONS
-	 *
-	 * [--delete]
-	 * : Delete all orphans.
-	 *
-	 * [--format=<format>]
-	 * : Render output in a particular format.
-	 * ---
-	 * default: ids
-	 * options:
-	 *   - count
-	 *   - csv
-	 *   - ids
-	 *   - json
-	 *   - table
-	 *   - yaml
-	 * ---
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     # List all orphan term metadata.
-	 *     $ wp orphan termmeta
-	 *     66,69
-	 *
-	 *     # List all orphan term metadata as table.
-	 *     $ wp orphan termmeta --format=table
-	 *     +----+
-	 *     | ID |
-	 *     +----+
-	 *     | 66 |
-	 *     | 69 |
-	 *     +----+
-	 *
-	 *     # Count all orphan term metadata.
-	 *     $ wp orphan termmeta --format=count
-	 *     2
-	 *
-	 *     # Delete all orphan term metadata.
-	 *     $ wp orphan termmeta --delete
-	 *     66,69
-	 *     Deleting 2 items...
-	 *     Success: Done.
-	 *
-	 * @param array $args       Parameters passed to command (in the original order).
-	 * @param array $assoc_args Parameters passed to command (named).
-	 */
-	public function termmeta( array $args, array $assoc_args ): void {
-
-		$this->process_( $assoc_args, __FUNCTION__ );
-	}
-
-	/**
-	 * List (or delete) orphan user metadata.
-	 *
-	 * ## OPTIONS
-	 *
-	 * [--delete]
-	 * : Delete all orphans.
-	 *
-	 * [--format=<format>]
-	 * : Render output in a particular format.
-	 * ---
-	 * default: ids
-	 * options:
-	 *   - count
-	 *   - csv
-	 *   - ids
-	 *   - json
-	 *   - table
-	 *   - yaml
-	 * ---
-	 *
-	 * ## EXAMPLES
-	 *
-	 *     # List all orphan user metadata.
-	 *     $ wp orphan usermeta
-	 *     77,99
-	 *
-	 *     # List all orphan user metadata as table.
-	 *     $ wp orphan usermeta --format=table
-	 *     +----+
-	 *     | ID |
-	 *     +----+
-	 *     | 77 |
-	 *     | 99 |
-	 *     +----+
-	 *
-	 *     # Count all orphan user metadata.
-	 *     $ wp orphan usermeta --format=count
-	 *     2
-	 *
-	 *     # Delete all orphan user metadata.
-	 *     $ wp orphan usermeta --delete
-	 *     77,99
-	 *     Deleting 2 items...
-	 *     Success: Done.
-	 *
-	 * @param array $args       Parameters passed to command (in the original order).
-	 * @param array $assoc_args Parameters passed to command (named).
-	 */
-	public function usermeta( array $args, array $assoc_args ): void {
-
-		$this->process_( $assoc_args, __FUNCTION__ );
-	}
+	abstract protected function delete_orphan( int $id ): bool;
 
 	/**
 	 * Process orphans for the given entity type.
 	 *
-	 * @param array  $assoc_args Parameters passed to command.
-	 * @param string $entity     Entity type such as "post" or "termmeta".
+	 * @param array $assoc_args Parameters passed to the command.
 	 */
-	private function process_( array $assoc_args, string $entity ): void {
-		global $wpdb;
+	protected function list_orphans( array $assoc_args ): void {
 
-		[ $table, $field, $ref, $foreign_table, $foreign_field, $type_field ] = $this->get_query_refs( $entity );
+		$format = get_flag_value( $assoc_args, 'format', 'ids' );
 
-		$query = <<<SQL
-SELECT {$field}
-FROM {$table}
-WHERE {$ref} != 0
-  AND {$ref} NOT IN (
-    SELECT {$foreign_field}
-    FROM {$foreign_table}
-  )
-SQL;
+		$items = $format === 'ids' ? $this->get_ids( $assoc_args ) : $this->get_items( $assoc_args );
 
-		$type = trim( get_flag_value( $assoc_args, 'type', '' ) );
-		if ( $type && $type_field ) {
-			$types = array_map( 'sanitize_key', explode( ',', $type ) );
-			$query .= "\n  AND {$type_field} IN ('" . implode( "','", $types ) . "')";
-		}
-
-		$delete = (bool) get_flag_value( $assoc_args, 'delete', false );
-
-		$format = $delete ? 'ids' : get_flag_value( $assoc_args, 'format', 'ids' );
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All user data has been sanitized.
-		$results = $format === 'ids' ? $wpdb->get_col( $query ) : $wpdb->get_results( $query );
-
-		format_items( $format, $results, $field );
-
-		if ( $delete && $results ) {
-			$this->delete_( $entity, $results );
-
-			WP_CLI::success( __( 'Done.', 'orphan-command' ) );
-		}
+		format_items( $format, $items, $this->column_id );
 	}
 
 	/**
-	 * Delete all orphans for the given entity type and IDs.
+	 * Delete all orphans for the current entity type.
 	 *
-	 * @param string $entity Entity type such as "post" or "termmeta".
-	 * @param array  $ids    Item IDs.
+	 * @param array $assoc_args Parameters passed to the command.
 	 */
-	private function delete_( string $entity, array $ids ): void {
+	protected function delete_orphans( array $assoc_args ): void {
 
-		WP_CLI::log( '' );
+		$ids = $this->get_ids( $assoc_args );
+		if ( ! $ids ) {
+			WP_CLI::log( __( 'No items found.', 'orphan-command' ) );
+
+			return;
+		}
 
 		$count = count( $ids );
 
@@ -485,129 +116,67 @@ SQL;
 			$count
 		) );
 
-		switch ( $entity ) {
-			case 'blogmeta':
-			case 'commentmeta':
-			case 'postmeta':
-			case 'termmeta':
-			case 'usermeta':
-				$meta_type = substr( $entity, 0, -4 );
-
-				$delete = function ( $id ) use ( $meta_type ): bool {
-					return (bool) delete_metadata_by_mid( $meta_type, $id );
-				};
-				break;
-
-			case 'comment':
-				$delete = function ( $id ): bool {
-					return (bool) wp_delete_comment( $id, true );
-				};
-				break;
-
-			case 'post':
-				$delete = function ( $id ): bool {
-					return (bool) wp_delete_post( $id, true );
-				};
-				break;
-
-			default:
-				// Invalid type! This should not happen, but hey.
-				return;
-		}
-
 		foreach ( $ids as $id ) {
-			if ( ! $delete( $id ) ) {
+			if ( ! $this->delete_orphan( $id ) ) {
 				WP_CLI::error( sprintf(
-					__( 'Could not delete %s with ID %d!', 'orphan-command' ),
-					$entity,
+					__( 'Could not delete item with ID %d!', 'orphan-command' ),
 					$id
 				) );
 			}
 		}
+
+		WP_CLI::success( __( 'Done.', 'orphan-command' ) );
 	}
 
 	/**
-	 * Return the references needed for querying the given entity type.
+	 * Return the MySQL query to fetch the orphans for the current entity type.
 	 *
-	 * @param string $entity Entity type such as "post" or "termmeta".
+	 * @param array $assoc_args Parameters passed to the command.
 	 *
-	 * @return string[] Database table and column names.
+	 * @return string MySQL query.
 	 */
-	private function get_query_refs( string $entity ): array {
+	protected function get_query( array $assoc_args ): string {
+
+		return <<<SQL
+SELECT {$this->column_id}
+FROM {$this->table}
+WHERE {$this->column_ref} != 0
+  AND {$this->column_ref} NOT IN (
+    SELECT {$this->column_parent_id}
+    FROM {$this->table_parent}
+  )
+SQL;
+	}
+
+	/**
+	 * Return all orphans.
+	 *
+	 * @param array $assoc_args Parameters passed to the command.
+	 *
+	 * @return object[] Orphans.
+	 */
+	private function get_items( array $assoc_args ): array {
 		global $wpdb;
 
-		switch ( $entity ) {
-			case 'blogmeta':
-				return [
-					$wpdb->blogmeta,
-					'meta_id',
-					'blog_id',
-					$wpdb->blogs,
-					'blog_id',
-					'',
-				];
+		$query = $this->get_query( $assoc_args );
 
-			case 'comment':
-				return [
-					$wpdb->comments,
-					'comment_id',
-					'comment_post_ID',
-					$wpdb->posts,
-					'ID',
-					'comment_type',
-				];
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- All user data has been sanitized.
+		return $wpdb->get_results( $query );
+	}
 
-			case 'commentmeta':
-				return [
-					$wpdb->commentmeta,
-					'meta_id',
-					'comment_id',
-					$wpdb->comments,
-					'comment_ID',
-					'',
-				];
+	/**
+	 * Return all orphan IDs.
+	 *
+	 * @param array $assoc_args Parameters passed to the command.
+	 *
+	 * @return int[] Orphan IDs.
+	 */
+	private function get_ids( array $assoc_args ): array {
 
-			case 'post':
-				return [
-					$wpdb->posts,
-					'ID',
-					'post_parent',
-					$wpdb->posts,
-					'ID',
-					'post_type',
-				];
+		$items = $this->get_items( $assoc_args );
 
-			case 'postmeta':
-				return [
-					$wpdb->postmeta,
-					'meta_id',
-					'post_id',
-					$wpdb->posts,
-					'ID',
-					'',
-				];
+		$ids = array_column( $items, $this->column_id );
 
-			case 'termmeta':
-				return [
-					$wpdb->termmeta,
-					'meta_id',
-					'term_id',
-					$wpdb->terms,
-					'term_id',
-					'',
-				];
-
-			case 'usermeta':
-				return [
-					$wpdb->usermeta,
-					'umeta_id',
-					'user_id',
-					$wpdb->users,
-					'ID',
-					'',
-				];
-		}
-
-		return [];
+		return array_map( 'intval', $ids );
 	}
 }

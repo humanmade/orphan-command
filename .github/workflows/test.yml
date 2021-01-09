@@ -1,0 +1,28 @@
+name: Test
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ['7.2', '7.3', '7.4', '8.0']
+    name: Test PHP ${{ matrix.php }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+
+    - name: Install dependencies
+      run: composer install -n -q --prefer-dist
+
+    - name: Check syntax errors
+      run: composer lint
+
+    - name: Check coding standard violations
+      run: composer phpcs

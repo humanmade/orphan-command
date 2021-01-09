@@ -1,13 +1,16 @@
 <?xml version="1.0"?>
 <ruleset name="OrphanCommand">
 	<arg name="extensions" value="php"/>
-	<arg value="s"/>
+	<arg value="ps"/>
 
 	<config name="testVersion" value="7.2-"/>
 
 	<exclude-pattern>/vendor/*</exclude-pattern>
 
 	<rule ref="HM">
+		<!-- Exclude short description sniff to allow for short `@var` annotations. -->
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+
 		<!-- Exclude filename-related sniffs. -->
 		<exclude name="HM.Files"/>
 		<exclude name="WordPress.Files"/>
