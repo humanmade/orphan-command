@@ -1,13 +1,6 @@
 # Orphan Command
 
-Stable tag: 1.0.0  
-Requires at least: 3.3  
-Tested up to: 5.6  
-Requires PHP: 7.2  
-License: GPL v3 or later  
-Contributors: tfrommen, humanmade
-
-WP-CLI command to list and delete orphan WordPress entities and metadata.
+> WP-CLI command to list and delete orphan WordPress entities and metadata.
 
 ----
 
@@ -288,9 +281,16 @@ However, there it is more of an interpretation issue, which is why Orphan Comman
 
 A future version of Orphan Command might allow to also list/delete orphan terms.
 
-> **What about site/network metadata?**
+> **What about site/network metadata or options?**
 
 The terminology in WordPress around blog metadata and options, network options, and site metadata and options is quite confusing!
+
+Some facts:
+
+* Orphan Command supports blog meta.
+* Options live in dedicated tables on a per-site basis, which means there cannot be any orphan options.
+* While it makes sense to manage site (i.e., network) metadata, Orphan Command currently does not allow for this. The main reason really is to prevent people from accidentally deleting the wrong data.
+* A future version of Orphan Command might allow to also list/delete site metadata.
 
 > **What about use case XYZ?**
 
