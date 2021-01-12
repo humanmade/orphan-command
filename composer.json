@@ -1,6 +1,6 @@
 {
   "name": "humanmade/orphan-command",
-  "description": "List and delete orphan entities and metadata.",
+  "description": "WP-CLI command to list and delete orphan WordPress entities and metadata.",
   "type": "wp-cli-package",
   "homepage": "https://github.com/humanmade/orphan-command",
   "license": "GPL-3.0-or-later",
@@ -59,6 +59,9 @@
       "orphan postmeta delete",
       "orphan postmeta list",
       "orphan postmeta query",
+      "orphan revision delete",
+      "orphan revision list",
+      "orphan revision query",
       "orphan termmeta delete",
       "orphan termmeta list",
       "orphan termmeta query",

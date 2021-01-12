@@ -36,5 +36,6 @@ WP_CLI::add_command( 'orphan comment', HumanMade\OrphanCommand\Orphan_Comment_Co
 WP_CLI::add_command( 'orphan comment meta', HumanMade\OrphanCommand\Orphan_Comment_Meta_Command::class );
 WP_CLI::add_command( 'orphan post', HumanMade\OrphanCommand\Orphan_Post_Command::class );
 WP_CLI::add_command( 'orphan post meta', HumanMade\OrphanCommand\Orphan_Post_Meta_Command::class );
+WP_CLI::add_command( 'orphan revision', HumanMade\OrphanCommand\Orphan_Revision_Command::class );
 WP_CLI::add_command( 'orphan term meta', HumanMade\OrphanCommand\Orphan_Term_Meta_Command::class );
 WP_CLI::add_command( 'orphan user meta', HumanMade\OrphanCommand\Orphan_User_Meta_Command::class );

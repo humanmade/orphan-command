@@ -30,6 +30,7 @@ Orphan Command provides a new WP-CLI command, `wp orphan`, that lets you easily 
   * [`wp-orphan-comment-meta`](#wp-orphan-comment-meta)
   * [`wp-orphan-post`](#wp-orphan-post)
   * [`wp-orphan-post-meta`](#wp-orphan-post-meta)
+  * [`wp-orphan-revision`](#wp-orphan-revision)
   * [`wp-orphan-term-meta`](#wp-orphan-term-meta)
   * [`wp-orphan-user-meta`](#wp-orphan-user-meta)
 * [Extending Orphan Command](#extending-orphan-command)
@@ -223,6 +224,25 @@ wp orphan post meta list
 
 ```shell
 wp orphan post meta delete
+```
+
+### `wp orphan revision`
+
+The `wp orphan revision` command lets you list and delete all **revisions** referencing original **posts** that don't exist anymore.
+
+Revisions are one of the Custom Post Types included in WordPress.
+Since they are somewhat special in that a revision with a non-existing original (parent) post is of no use whatsoever, and since there is a dedicated API for revisions (e.g., `wp_delete_post_revision`), Orphan Command provides a custom command for managing revisions.
+
+**List all orphan revisions:**
+
+```shell
+wp orphan revision list
+```
+
+**Delete all orphan revisions:**
+
+```shell
+wp orphan revision delete
 ```
 
 ### `wp orphan term meta`
