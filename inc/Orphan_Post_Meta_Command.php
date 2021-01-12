@@ -82,8 +82,6 @@ class Orphan_Post_Meta_Command extends Orphan_Meta_Command {
 	/**
 	 * Delete all orphan post metadata according to the passed parameters.
 	 *
-	 * ## OPTIONS
-	 *
 	 * ## EXAMPLES
 	 *
 	 *     # Delete all orphan post metadata.

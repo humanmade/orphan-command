@@ -82,8 +82,6 @@ class Orphan_Blog_Meta_Command extends Orphan_Meta_Command {
 	/**
 	 * Delete all orphan blog metadata according to the passed parameters.
 	 *
-	 * ## OPTIONS
-	 *
 	 * ## EXAMPLES
 	 *
 	 *     # Delete all orphan blog metadata.
