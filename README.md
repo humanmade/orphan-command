@@ -85,7 +85,7 @@ Orphan Command **requires WP-CLI 2.5 or higher**.
 
 ## Commands
 
-In general, all commands support the following three **sub-commands**:
+In general, all commands support the following three **actions**:
 
 * **`delete`**: Delete all orphans of the respective entity type.
 * **`list`**: List all orphans of the respective entity type.
