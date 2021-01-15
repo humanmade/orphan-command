@@ -104,12 +104,9 @@ class Orphan_Revision_Command extends Orphan_Post_Command {
 	 */
 	protected function get_query( array $assoc_args ): string {
 
-		unset( $assoc_args['type'] );
+		// Set correct post type.
+		$assoc_args['type'] = 'revision';
 
-		$query = parent::get_query( $assoc_args );
-
-		$query .= "\n  AND {$this->column_type} = 'revision'";
-
-		return $query;
+		return parent::get_query( $assoc_args );
 	}
 }
