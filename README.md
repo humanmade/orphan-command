@@ -7,10 +7,14 @@
 ## Introduction
 
 WordPress offers dedicated APIs that are to be used for CRUD operations on the various core data structures.
-When deleting a comment via `wp_delete_comment( $comment_id, true )`, WordPress takes care that all metadata for that comment gets automatically deleted as well.
+For example, when you delete a comment via `wp_delete_comment( $comment_id, true )`, WordPress takes care that all metadata for that comment gets automatically deleted as well.
 Great!
 
-However, people not always do what is right, and so it's not a rare situation that you have to face a database that is full of orphaned entries.
+However, people not always do what is right—on purpose, or by accident.
+The reason for that could be that someone deleted entities and/or metadata directly in the DB (instead of using the respective WordPress API to handle that data).
+This might make sense when you want to reduce a large production or staging database export, and therefore delete (random) posts etc.
+Or maybe someone only did a partial database import, or partial migration.
+Over time, you might end up with a database that is full of orphaned entries.
 Comment metadata for comments that no longer exist, comments for non-existing posts, or revisions of posts that don't exist anymore.
 
 Orphan Command provides a new WP-CLI command, `wp orphan`, that lets you easily spot orphans, and even delete them, if you want.
