@@ -32,7 +32,11 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   },
   "scripts": {
     "lint": "find ./orphan-command.php ./inc/ -type f -name '*.php' -print0 | xargs -0 -L 1 -P 4 -- php -l",
