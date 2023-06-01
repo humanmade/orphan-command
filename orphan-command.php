@@ -11,7 +11,7 @@
  * Plugin Name:       Orphan Command
  * Plugin URI:        https://github.com/humanmade/orphan-command
  * Description:       WP-CLI command to list and delete orphan WordPress entities and metadata.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 3.3
  * Requires PHP:      7.2
  * Author:            Human Made
