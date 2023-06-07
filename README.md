@@ -281,6 +281,18 @@ wp orphan user meta list
 wp orphan user meta delete
 ```
 
+### Run all commands
+
+```shell
+wp eval 'exit(is_multisite()?0:1);' && wp orphan blog meta list
+wp orphan comment list
+wp orphan post list
+wp orphan post meta list
+wp orphan revision list
+wp orphan term meta list
+wp orphan user meta list
+```
+
 ## Extending Orphan Command
 
 If you want to customize or extend the functionality of Orphan Command, you can either extend any of the actual command classes, or you could write your own based on either the `Orphan_Command` or `Orphan_Meta_Command` class included in Orphan Command.
