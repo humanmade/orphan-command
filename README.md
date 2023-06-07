@@ -284,7 +284,7 @@ wp orphan user meta delete
 ### Run all commands
 
 ```shell
-wp eval 'exit(is_multisite()?0:1);' && wp orphan blog meta list
+wp core is-installed --network && wp orphan blog meta list
 wp orphan comment list
 wp orphan post list
 wp orphan post meta list
