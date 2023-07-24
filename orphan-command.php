@@ -31,7 +31,13 @@ if ( is_readable( $wpcli_orphan_autoloader ) ) {
 }
 unset( $wpcli_orphan_autoloader );
 
-WP_CLI::add_command( 'orphan blog meta', HumanMade\OrphanCommand\Orphan_Blog_Meta_Command::class );
+WP_CLI::add_command( 'orphan blog meta', HumanMade\OrphanCommand\Orphan_Blog_Meta_Command::class, [
+        'before_invoke' => function () {
+                if ( ! is_multisite() ) {
+                        WP_CLI::error( 'This is not a multisite installation.' );
+                }
+        },
+] );
 WP_CLI::add_command( 'orphan comment', HumanMade\OrphanCommand\Orphan_Comment_Command::class );
 WP_CLI::add_command( 'orphan comment meta', HumanMade\OrphanCommand\Orphan_Comment_Meta_Command::class );
 WP_CLI::add_command( 'orphan post', HumanMade\OrphanCommand\Orphan_Post_Command::class );
