@@ -138,7 +138,7 @@ class Orphan_Post_Command extends Orphan_Command {
 	 */
 	protected function delete_orphan( int $id ): bool {
 
-		return wp_delete_post( $id, true );
+		return (bool) wp_delete_post( $id, true );
 	}
 
 	/**
