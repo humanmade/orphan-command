@@ -37,6 +37,7 @@ Orphan Command provides a new WP-CLI command, `wp orphan`, that lets you easily 
   * [`wp orphan revision`](#wp-orphan-revision)
   * [`wp orphan term meta`](#wp-orphan-term-meta)
   * [`wp orphan user meta`](#wp-orphan-user-meta)
+  * [Run all commands](#run-all-commands)
 * [Extending Orphan Command](#extending-orphan-command)
 * [Frequently Asked Questions](#frequently-asked-questions)
 
@@ -279,6 +280,18 @@ wp orphan user meta list
 
 ```shell
 wp orphan user meta delete
+```
+
+### Run all commands
+
+```shell
+wp core is-installed --network && wp orphan blog meta list
+wp orphan comment list
+wp orphan post list
+wp orphan post meta list
+wp orphan revision list
+wp orphan term meta list
+wp orphan user meta list
 ```
 
 ## Extending Orphan Command
